@@ -1,0 +1,1 @@
+!function(){var n=document.getElementById("myCanvas").getContext("2d"),e=new Image;e.src="./img/background.png",e.addEventListener("load",(function(){window.requestAnimationFrame((function(){n.drawImage(e,0,0)}))}))}();
