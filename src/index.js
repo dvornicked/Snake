@@ -4,6 +4,7 @@ let game =  {
      sprites: {
          background: null,
          cell: null,
+         body: null
      },
     width: 640,
     height: 360,
@@ -35,9 +36,11 @@ let game =  {
      },
      run() {
         this.board.create()
+         this.snake.create()
          window.requestAnimationFrame(() => {
              this.ctx.drawImage(this.sprites.background, 0, 0)
              this.board.render()
+             this.snake.render()
          })
      }
 }
@@ -47,14 +50,12 @@ game.board = {
     size: 15,
     cells: [],
     create() {
-        console.log('Вызвана функция')
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
                 let cell = this.createCell(row, col)
                 this.cells.push(cell)
             }
         }
-        console.log(this.cells)
     },
     createCell(row, col) {
         let cellSize = this.game.sprites.cell.width + 1
@@ -68,6 +69,30 @@ game.board = {
     render() {
         this.cells.forEach(cell => {
             this.game.ctx.drawImage(this.game.sprites.cell, cell.x, cell.y)
+        })
+    },
+    getCell(row, col) {
+        return this.cells.find(cell => cell.row === row && cell.col === col)
+    }
+}
+
+game.snake = {
+    game: game,
+    cells: [],
+    create() {
+        let startCells= [
+            {row: 7, col: 7},
+            {row: 8, col: 7}
+        ]
+
+        for (let startCell of startCells) {
+            let cell = this.game.board.getCell(startCell.row, startCell.col)
+            this.cells.push(cell)
+        }
+    },
+    render() {
+        this.cells.forEach(cell => {
+            this.game.ctx.drawImage(this.game.sprites.body, cell.x, cell.y)
         })
     }
 }
