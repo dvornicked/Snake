@@ -9,6 +9,11 @@ let game =  {
          head: null,
          bomb: null
      },
+    sounds: {
+        bomb: null,
+        food: null,
+        theme: null
+    },
     width: 0,
     height: 0,
     dimensions: {
@@ -68,6 +73,7 @@ let game =  {
      preload(callback) {
         let loaded = 0
         let required = Object.keys(this.sprites).length
+         required += Object.keys(this.sounds).length
         let onAssetLoad = () => {
             ++loaded
 
@@ -75,12 +81,23 @@ let game =  {
                 callback()
             }
         }
-         for (let key in this.sprites) {
-             this.sprites[key] = new Image()
-             this.sprites[key].src = `./img/${key}.png`
-             this.sprites[key].addEventListener('load', onAssetLoad)
-         }
+        this.preloadSprites(onAssetLoad)
+         this.preloadAudio(onAssetLoad)
      },
+    preloadSprites(onAssetLoad) {
+        for (let key in this.sprites) {
+            this.sprites[key] = new Image()
+            this.sprites[key].src = `./img/${key}.png`
+            this.sprites[key].addEventListener('load', onAssetLoad)
+        }
+    },
+    preloadAudio(onAssetLoad) {
+        for (let key in this.sounds) {
+            this.sounds[key] = new Audio()
+            this.sounds[key].src = `./sounds/${key}.mp3`
+            this.sounds[key].addEventListener('canplaythrough', onAssetLoad, {once: true})
+        }
+    },
     create() {
         this.board.create()
         this.snake.create()
@@ -117,10 +134,19 @@ let game =  {
          }, 3000)
      },
     stop() {
+        this.sounds.bomb.play()
         clearInterval(this.gameInterval)
         clearInterval(this.bombInterval)
         alert('Game over')
         window.location.reload()
+    },
+    onSnakeStart() {
+        this.sounds.theme.loop = true
+        this.sounds.theme.play()
+    },
+    onSnakeEat() {
+        this.sounds.food.play()
+        this.board.createFood()
     },
     random(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min
@@ -265,6 +291,9 @@ game.snake = {
                 this.direction = this.directions.right
                 break
         }
+        if (!this.moving) {
+            this.game.onSnakeStart()
+        }
         this.moving = true
     },
     move() {
@@ -282,7 +311,7 @@ game.snake = {
             if (!this.game.board.isFoodCell(cell)) {
                 this.cells.pop()
             } else {
-                this.game.board.createFood()
+                this.game.onSnakeEat()
             }
         }
     },
