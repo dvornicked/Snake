@@ -106,16 +106,22 @@ let game =  {
      run() {
          this.create()
 
-         setInterval(() => {
+         this.gameInterval = setInterval(() => {
              this.update()
          }, 150)
 
-         setInterval(() => {
+         this.bombInterval =  setInterval(() => {
              if (this.snake.moving) {
                  this.board.createBomb()
              }
          }, 3000)
      },
+    stop() {
+        clearInterval(this.gameInterval)
+        clearInterval(this.bombInterval)
+        alert('Game over')
+        window.location.reload()
+    },
     random(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
@@ -139,8 +145,7 @@ game.board = {
 
         offsetX = (this.game.width - cellSize * this.size) / 2
         offsetY = (this.game.height - cellSize * this.size) / 2
-        let cell = {row, col, x: cellSize * col + offsetX, y: cellSize * row + offsetY}
-        return cell
+        return {row, col, x: cellSize * col + offsetX, y: cellSize * row + offsetY}
     },
     render() {
         this.cells.forEach(cell => {
@@ -168,7 +173,7 @@ game.board = {
         this.createCellObject('bomb')
     },
     getRandomAvailableCell() {
-        let pool = this.cells.filter(cell => !cell.hasFood && !cell.hasBomb && !this.game.snake.hasCell(cell))
+        let pool = this.cells.filter(cell => !cell.type && !this.game.snake.hasCell(cell))
         let index = this.game.random(0, pool.length - 1)
         return pool [index]
     },
@@ -268,7 +273,9 @@ game.snake = {
         }
         let cell = this.getNextCell()
 
-        if (cell) {
+        if (!cell || this.hasCell(cell) || this.game.board.isBombCell(cell)) {
+            this.game.stop()
+        } else {
             this.cells.unshift(cell)
 
 
