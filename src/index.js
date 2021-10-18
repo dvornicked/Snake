@@ -107,7 +107,10 @@ let game =  {
              this.update()
          }, 150)
 
-     }
+     },
+    random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min
+    }
 }
 
 game.board = {
@@ -143,9 +146,16 @@ game.board = {
         return this.cells.find(cell => cell.row === row && cell.col === col)
     },
     createFood() {
-
-        let cell = this.cells[0]
+        let cell = this.getRandomAvailableCell()
         cell.hasFood = true
+    },
+    getRandomAvailableCell() {
+        let pool = this.cells.filter(cell => {
+            return !this.game.snake.hasCell(cell)
+        })
+
+            let index = this.game.random(0, pool.length - 1)
+        return pool [index]
     }
 }
 
@@ -224,6 +234,9 @@ game.snake = {
         let col = head.col + this.direction.col
 
         return this.game.board.getCell(row, col)
+    },
+    hasCell(cell) {
+        this.cells.find(part => part === cell)
     }
 }
 
