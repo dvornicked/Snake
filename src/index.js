@@ -146,16 +146,20 @@ game.board = {
         return this.cells.find(cell => cell.row === row && cell.col === col)
     },
     createFood() {
-        let cell = this.getRandomAvailableCell()
+        let cell = this.cells.find(cell => cell.hasFood)
+        if (cell) {
+            cell.hasFood = false
+        }
+        cell = this.getRandomAvailableCell()
         cell.hasFood = true
     },
     getRandomAvailableCell() {
-        let pool = this.cells.filter(cell => {
-            return !this.game.snake.hasCell(cell)
-        })
-
-            let index = this.game.random(0, pool.length - 1)
+        let pool = this.cells.filter(cell => !this.game.snake.hasCell(cell))
+        let index = this.game.random(0, pool.length - 1)
         return pool [index]
+    },
+    isFoodCell(cell) {
+        return cell.hasFood
     }
 }
 
@@ -184,8 +188,8 @@ game.snake = {
     },
     create() {
         let startCells= [
-            {row: 7, col: 7},
-            {row: 8, col: 7}
+            {row: 0, col: 0},
+            {row: 1, col: 0}
         ]
         this.direction = this.directions.up
 
@@ -224,7 +228,13 @@ game.snake = {
 
         if (cell) {
             this.cells.unshift(cell)
-            this.cells.pop()
+
+
+            if (!this.game.board.isFoodCell(cell)) {
+                this.cells.pop()
+            } else {
+                this.game.board.createFood()
+            }
         }
     },
     getNextCell() {
@@ -236,7 +246,7 @@ game.snake = {
         return this.game.board.getCell(row, col)
     },
     hasCell(cell) {
-        this.cells.find(part => part === cell)
+        return this.cells.find(part => part === cell)
     }
 }
 
