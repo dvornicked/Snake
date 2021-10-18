@@ -50,7 +50,7 @@ let game =  {
         this.canvas.style.height = '100%'
     },
     fitWidth(data) {
-        this.height = Math.round(this.width * data.realHeight / data.realWidth)
+        this.height = Math.round(data.maxWidth * data.realHeight / data.realWidth)
         this.height = Math.min(this.height, data.maxHeight)
         this.height = Math.max(this.height, data.minHeight)
         this.width = Math.round(data.realWidth * this.height / data.realHeight)
@@ -78,14 +78,29 @@ let game =  {
              this.sprites[key].addEventListener('load', onAssetLoad)
          }
      },
-     run() {
+    create() {
         this.board.create()
-         this.snake.create()
-         window.requestAnimationFrame(() => {
-             this.ctx.drawImage(this.sprites.background, (this.width - this.sprites.background.width) / 2, (this.height - this.sprites.background.height) / 2)
-             this.board.render()
-             this.snake.render()
-         })
+        this.snake.create()
+    },
+    render() {
+        window.requestAnimationFrame(() => {
+            this.ctx.clearRect(0, 0, this.width, this.height)
+            this.ctx.drawImage(this.sprites.background, (this.width - this.sprites.background.width) / 2, (this.height - this.sprites.background.height) / 2)
+            this.board.render()
+            this.snake.render()
+        })
+    },
+    update() {
+        this.snake.move()
+        this.render()
+    },
+     run() {
+         this.create()
+
+         setInterval(() => {
+             this.update()
+         }, 150)
+
      }
 }
 
@@ -138,6 +153,21 @@ game.snake = {
         this.cells.forEach(cell => {
             this.game.ctx.drawImage(this.game.sprites.body, cell.x, cell.y)
         })
+    },
+    move() {
+        let cell = this.getNextCell()
+
+        if (cell) {
+            this.cells.unshift(cell)
+            this.cells.pop()
+        }
+    },
+    getNextCell() {
+        let head = this.cells[0]
+        let row = head.row - 1
+        let col = head.col
+
+        return this.game.board.getCell(row, col)
     }
 }
 
