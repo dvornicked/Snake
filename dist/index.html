@@ -1,4 +1,8 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>Snake</title><style>body {
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1"><meta http-equiv="X-UA-Compatible" content="ie=edge"><title>Snake</title><style>@font-face {
+            font-family: Milky;
+            src: url('fonts/Milky.otf');
+        }
+        body {
             background-color: #a5511f;
             text-align: center;
             margin: 0;
@@ -9,4 +13,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-        }</style><script defer="defer" src="bundle.js"></script></head><body><canvas id="myCanvas"></canvas></body></html>
+        }
+        .fontPreload {
+            font-family: Milky;
+            position: absolute;
+            left: -100px;
+        }</style><script defer="defer" src="bundle.js"></script></head><body><div class="fontPreload">.</div><canvas id="myCanvas"></canvas></body></html>

@@ -34,7 +34,7 @@ let game =  {
         this.setTextFont()
     },
     setTextFont() {
-        this.ctx.font = '20px Arial'
+        this.ctx.font = '20px Milky'
         this.ctx.fillStyle = '#fff'
     },
     initDimensions() {
@@ -336,4 +336,6 @@ game.snake = {
     }
 }
 
-game.start()
+window.addEventListener('load', () => {
+    game.start()
+})

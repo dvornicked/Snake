@@ -7,6 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Snake</title>
     <style>
+        @font-face {
+            font-family: Milky;
+            src: url('fonts/Milky.otf');
+        }
         body {
             background-color: #a5511f;
             text-align: center;
@@ -19,9 +23,15 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .fontPreload {
+            font-family: Milky;
+            position: absolute;
+            left: -100px;
+        }
     </style>
 </head>
 <body>
+<div class="fontPreload">.</div>
 <canvas id="myCanvas"></canvas>
 </body>
 </html>
