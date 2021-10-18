@@ -24,12 +24,18 @@ let game =  {
         min: {
             width: 300,
             height: 300
-        }
+        },
     },
+    score: 0,
     init() {
         this.canvas = document.getElementById('myCanvas')
         this.ctx = this.canvas.getContext('2d')
         this.initDimensions()
+        this.setTextFont()
+    },
+    setTextFont() {
+        this.ctx.font = '20px Arial'
+        this.ctx.fillStyle = '#fff'
     },
     initDimensions() {
         let data = {
@@ -114,6 +120,7 @@ let game =  {
             this.ctx.drawImage(this.sprites.background, (this.width - this.sprites.background.width) / 2, (this.height - this.sprites.background.height) / 2)
             this.board.render()
             this.snake.render()
+            this.ctx.fillText(`Score: ${this.score}`, 30, 30)
         })
     },
     update() {
@@ -145,6 +152,7 @@ let game =  {
         this.sounds.theme.play()
     },
     onSnakeEat() {
+        ++this.score
         this.sounds.food.play()
         this.board.createFood()
     },
@@ -240,8 +248,8 @@ game.snake = {
     },
     create() {
         let startCells= [
-            {row: 0, col: 0},
-            {row: 1, col: 0}
+            {row: 7, col: 7},
+            {row: 8, col: 7}
         ]
         this.direction = this.directions.up
 
