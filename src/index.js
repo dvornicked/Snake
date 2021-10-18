@@ -6,7 +6,8 @@ let game =  {
          cell: null,
          body: null,
          food: null,
-         head: null
+         head: null,
+         bomb: null
      },
     width: 0,
     height: 0,
@@ -84,6 +85,7 @@ let game =  {
         this.board.create()
         this.snake.create()
         this.board.createFood()
+        this.board.createBomb()
 
         window.addEventListener('keydown', e => {
             this.snake.start(e.key)
@@ -108,6 +110,11 @@ let game =  {
              this.update()
          }, 150)
 
+         setInterval(() => {
+             if (this.snake.moving) {
+                 this.board.createBomb()
+             }
+         }, 3000)
      },
     random(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min
@@ -138,29 +145,38 @@ game.board = {
     render() {
         this.cells.forEach(cell => {
             this.game.ctx.drawImage(this.game.sprites.cell, cell.x, cell.y)
-            if (cell.hasFood) {
-                this.game.ctx.drawImage(this.game.sprites.food, cell.x, cell.y)
+            if (cell.type) {
+                this.game.ctx.drawImage(this.game.sprites[cell.type], cell.x, cell.y)
             }
         })
     },
     getCell(row, col) {
         return this.cells.find(cell => cell.row === row && cell.col === col)
     },
-    createFood() {
-        let cell = this.cells.find(cell => cell.hasFood)
+    createCellObject(type) {
+        let cell = this.cells.find(cell => cell.type === type)
         if (cell) {
-            cell.hasFood = false
+            cell.type = false
         }
         cell = this.getRandomAvailableCell()
-        cell.hasFood = true
+        cell.type = type
+    },
+    createFood() {
+        this.createCellObject('food')
+    },
+    createBomb() {
+        this.createCellObject('bomb')
     },
     getRandomAvailableCell() {
-        let pool = this.cells.filter(cell => !this.game.snake.hasCell(cell))
+        let pool = this.cells.filter(cell => !cell.hasFood && !cell.hasBomb && !this.game.snake.hasCell(cell))
         let index = this.game.random(0, pool.length - 1)
         return pool [index]
     },
     isFoodCell(cell) {
-        return cell.hasFood
+        return cell.type === 'food'
+    },
+    isBombCell(cell) {
+        return cell.type === 'bomb'
     }
 }
 
@@ -172,19 +188,23 @@ game.snake = {
     directions: {
         up: {
             row: -1,
-            col: 0
+            col: 0,
+            angle: 0
         },
         down: {
             row: 1,
-            col: 0
+            col: 0,
+            angle: 180
         },
         left: {
             row: 0,
-            col: -1
+            col: -1,
+            angle: 270
         },
         right: {
             row: 0,
-            col: 1
+            col: 1,
+            angle: 90
         }
     },
     create() {
@@ -201,7 +221,20 @@ game.snake = {
     },
     renderHead() {
         let head = this.cells[0]
-        this.game.ctx.drawImage(this.game.sprites.head, head.x, head.y)
+
+        let halfSize = this.game.sprites.head.width / 2
+
+        this.game.ctx.save()
+
+        this.game.ctx.translate(head.x + halfSize, head.y + halfSize)
+
+        let degree = this.direction.angle
+
+        this.game.ctx.rotate(degree * Math.PI / 180)
+
+        this.game.ctx.drawImage(this.game.sprites.head, -halfSize, -halfSize)
+
+        this.game.ctx.restore()
     },
     renderBody() {
         for (let i = 1; i < this.cells.length; i++) {
