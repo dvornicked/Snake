@@ -4,7 +4,8 @@ let game =  {
      sprites: {
          background: null,
          cell: null,
-         body: null
+         body: null,
+         food: null
      },
     width: 0,
     height: 0,
@@ -81,6 +82,7 @@ let game =  {
     create() {
         this.board.create()
         this.snake.create()
+        this.board.createFood()
 
         window.addEventListener('keydown', e => {
             this.snake.start(e.key)
@@ -132,10 +134,18 @@ game.board = {
     render() {
         this.cells.forEach(cell => {
             this.game.ctx.drawImage(this.game.sprites.cell, cell.x, cell.y)
+            if (cell.hasFood) {
+                this.game.ctx.drawImage(this.game.sprites.food, cell.x, cell.y)
+            }
         })
     },
     getCell(row, col) {
         return this.cells.find(cell => cell.row === row && cell.col === col)
+    },
+    createFood() {
+
+        let cell = this.cells[0]
+        cell.hasFood = true
     }
 }
 
@@ -180,7 +190,6 @@ game.snake = {
         })
     },
     start(key) {
-        console.log(key)
         switch (key) {
             case 'ArrowUp':
                 this.direction = this.directions.up
